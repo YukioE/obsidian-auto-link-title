@@ -1,4 +1,4 @@
-import { requestUrl } from 'obsidian'
+import { Notice, requestUrl } from 'obsidian'
 
 function blank(text: string): boolean {
   return text === undefined || text === null || text === ''
@@ -33,6 +33,33 @@ async function scrape(url: string): Promise<string> {
     console.error(ex)
     return 'Site Unreachable'
   }
+}
+
+export async function scrapeFirstURL(api : string, cx : string, query: string): Promise<string> {
+  let url : string;
+  const api_url = "https://www.googleapis.com/customsearch/v1?"
+
+  const params = {
+    key: api,
+    cx: cx,
+    q: query,
+    num: "1"
+  }
+
+  const searchParams = new URLSearchParams(params);
+
+  let response = await requestUrl(api_url + searchParams.toString())
+
+  if (response.status == 200) {
+    let data = response.json
+    url = data.items[0].link
+    new Notice("keyword: " + query + "\nfetched URL: " + url)
+  } else {
+    console.error("Error fetching data from Google Custom Search API")
+    return "Error"
+  }
+
+  return url
 }
 
 function getUrlFinalSegment(url: string): string {

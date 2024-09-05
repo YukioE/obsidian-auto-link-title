@@ -18,6 +18,17 @@ Additionally, using `ctrl-shift-e` (Windows) or `cmd-shift-e` (OS X) you can ove
 
 If your text cursor is within `[some plugin](https://github.com/zolrath/obsidian-auto-link-title)` pressing `ctrl+shift+e` fetches the sites title and replaces it, resulting in `[zolrath/obsidian-auto-link-title: Automatically fetch the titles of pasted links](https://github.com/zolrath/obsidian-auto-link-title)`
 
+### Fetch First Google Link Of Selected Text
+
+You can automatically fetch the URL of the first Google result that
+would come up if you googled your selected text via a command.
+This has a limit of 10k request per day.
+
+To use this feature, create an **API key** [here](https://developers.google.com/custom-search/v1/introduction) aswell as a **Custom Search Engine ID** [here](https://programmablesearchengine.google.com/controlpanel/all).
+Then put the key and ID into the plugins settings.
+
+> be sure to check the box "Search the entire web" in your engines settings
+
 ### Mobile Pasting
 In order to paste the URL ensure you perform the `Tap and Hold -> Paste` action to paste the URL into your document.
 

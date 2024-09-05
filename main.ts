@@ -1,7 +1,8 @@
 import { CheckIf } from "checkif"
 import { EditorExtensions } from "editor-enhancements"
-import { Editor, Plugin } from "obsidian"
+import { Editor, Notice, Plugin } from "obsidian"
 import getPageTitle from "scraper"
+import { scrapeFirstURL } from "scraper"
 import getElectronPageTitle from "electron-scraper"
 import {
   AutoLinkTitleSettingTab,
@@ -74,6 +75,13 @@ export default class AutoLinkTitle extends Plugin {
       ],
     });
 
+    this.addCommand({
+      id: "fetch-first-link",
+      name: "Fetch first Google link of selected text",
+      editorCallback: (editor) => this.fetchFirstLink(editor),
+      hotkeys: [],
+    });
+
     this.addSettingTab(new AutoLinkTitleSettingTab(this.app, this));
   }
 
@@ -92,6 +100,50 @@ export default class AutoLinkTitle extends Plugin {
       const link = this.getUrlFromLink(selectedText)
       this.convertUrlToTitledLink(editor, link)
     }
+  }
+
+  async fetchFirstLink(editor: Editor): Promise<void> {
+    if (!navigator.onLine) {
+      new Notice("You must be online to use this feature");
+      return;
+    }
+
+    let selectedText = (EditorExtensions.getSelectedText(editor) || "");
+
+    if (selectedText.trim() === "" || selectedText === null) {
+      new Notice("No text selected");
+      return;
+    }
+
+    // Generate a unique id for find/replace operations for the link.
+    const pasteId = `Fetching Link#${this.createBlockHash()}`;
+
+    // Instantly paste so you don't wonder if paste is broken
+    editor.replaceSelection(`[${selectedText}](${pasteId})`);
+
+    // Fetch link from site, replace Fetching Link with actual link
+    const link = await scrapeFirstURL(
+       this.settings.apiKey,
+       this.settings.customSearchEngineId,
+       selectedText
+      );
+    
+    const text = editor.getValue();
+
+    const start = text.indexOf(pasteId);
+    if (start < 0) {
+      console.log(
+        `Unable to find text "${pasteId}" in current editor, bailing out; link ${link}`
+      );
+    } else {
+      const end = start + pasteId.length;
+      const startPos = EditorExtensions.getEditorPositionFromIndex(text, start);
+      const endPos = EditorExtensions.getEditorPositionFromIndex(text, end);
+
+      editor.replaceRange(link, startPos, endPos);
+    }
+
+    return;
   }
 
   async normalPaste(editor: Editor): Promise<void> {

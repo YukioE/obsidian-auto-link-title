@@ -10,6 +10,8 @@ export interface AutoLinkTitleSettings {
   shouldPreserveSelectionAsTitle: boolean;
   enhanceDefaultPaste: boolean;
   enhanceDropEvents: boolean;
+  apiKey: string;
+  customSearchEngineId: string;
   websiteBlacklist: string;
   maximumTitleLength: number;
   useNewScraper: boolean;
@@ -28,6 +30,8 @@ export const DEFAULT_SETTINGS: AutoLinkTitleSettings = {
   enhanceDefaultPaste: true,
   shouldPreserveSelectionAsTitle: false,
   enhanceDropEvents: true,
+  apiKey: "",
+  customSearchEngineId: "",
   websiteBlacklist: "",
   maximumTitleLength: 0,
   useNewScraper: false,
@@ -102,6 +106,38 @@ export class AutoLinkTitleSettingTab extends PluginSettingTab {
           .onChange(async (value) => {
             console.log(value);
             this.plugin.settings.shouldPreserveSelectionAsTitle = value;
+            await this.plugin.saveSettings();
+          })
+      );
+
+    new Setting(containerEl)
+      .setName("API Key")
+      .setDesc(
+        "Google API key for the Custom Search JSON API"
+      )
+      .addTextArea((val) =>
+        val
+          .setValue(this.plugin.settings.apiKey)
+          .setPlaceholder("not set")
+          .onChange(async (value) => {
+            this.plugin.settings.apiKey = value;
+            await this.plugin.saveSettings();
+          }).then(textArea => {
+            textArea.inputEl.style.minWidth = "120%";
+          })
+      );
+
+    new Setting(containerEl)
+      .setName("Custom Search Engine ID")
+      .setDesc(
+        "Custom Search Engine ID for the Custom Search JSON API"
+      )
+      .addTextArea((val) =>
+        val
+          .setValue(this.plugin.settings.customSearchEngineId)
+          .setPlaceholder("not set")
+          .onChange(async (value) => {
+            this.plugin.settings.customSearchEngineId = value;
             await this.plugin.saveSettings();
           })
       );
