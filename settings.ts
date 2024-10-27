@@ -12,6 +12,7 @@ export interface AutoLinkTitleSettings {
   enhanceDropEvents: boolean;
   apiKey: string;
   customSearchEngineId: string;
+  insertFavicons: boolean;
   websiteBlacklist: string;
   maximumTitleLength: number;
   useNewScraper: boolean;
@@ -32,6 +33,7 @@ export const DEFAULT_SETTINGS: AutoLinkTitleSettings = {
   enhanceDropEvents: true,
   apiKey: "",
   customSearchEngineId: "",
+  insertFavicons: false,
   websiteBlacklist: "",
   maximumTitleLength: 0,
   useNewScraper: false,
@@ -136,6 +138,20 @@ export class AutoLinkTitleSettingTab extends PluginSettingTab {
           .setPlaceholder("not set")
           .onChange(async (value) => {
             this.plugin.settings.customSearchEngineId = value;
+            await this.plugin.saveSettings();
+          })
+      );
+
+    new Setting(containerEl)
+      .setName("Insert Favicons")
+      .setDesc(
+        "Insert favicons of websites in front of the title"
+      )
+      .addToggle((val) =>
+        val
+          .setValue(this.plugin.settings.insertFavicons)
+          .onChange(async (value) => {
+            this.plugin.settings.insertFavicons = value;
             await this.plugin.saveSettings();
           })
       );
