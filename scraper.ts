@@ -38,7 +38,7 @@ async function scrape(url: string): Promise<string> {
 
 export function getFaviconElement(url: string): string {
   const domain = new URL(url).hostname.replace('www.', '');
-  return `<img src='http://www.google.com/s2/favicons?domain=${domain}'/>`;
+  return `<img width=16 height=16 src='http://www.google.com/s2/favicons?domain=${domain}'/>`;
 }
 
 
