@@ -1,4 +1,5 @@
 import { Notice, requestUrl } from 'obsidian'
+import { domain } from 'process'
 
 function blank(text: string): boolean {
   return text === undefined || text === null || text === ''
@@ -34,6 +35,12 @@ async function scrape(url: string): Promise<string> {
     return 'Site Unreachable'
   }
 }
+
+export function getFaviconElement(url: string): string {
+  const domain = new URL(url).hostname.replace('www.', '');
+  return `<img src='http://www.google.com/s2/favicons?domain=${domain}'/>`;
+}
+
 
 export async function scrapeFirstURL(api : string, cx : string, query: string): Promise<string> {
   let url : string;

@@ -29,6 +29,16 @@ Then put the key and ID into the plugins settings.
 
 > be sure to check the box "Search the entire web" in your engines settings
 
+![Google search example](resources/google-fetch-example.gif)
+
+### Insert Favicons In Title of Links
+
+This feature is disabled by default.
+
+If the setting is enabled, the plugin will insert the favicon of the website in the title of the link. This happens when running any of the commands above.
+
+![Favicon example](resources/favicon-example.gif)
+
 ### Mobile Pasting
 In order to paste the URL ensure you perform the `Tap and Hold -> Paste` action to paste the URL into your document.
 

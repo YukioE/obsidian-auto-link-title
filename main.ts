@@ -2,7 +2,7 @@ import { CheckIf } from "checkif"
 import { EditorExtensions } from "editor-enhancements"
 import { Editor, Notice, Plugin } from "obsidian"
 import getPageTitle from "scraper"
-import { scrapeFirstURL } from "scraper"
+import { scrapeFirstURL, getFaviconElement } from "scraper"
 import getElectronPageTitle from "electron-scraper"
 import {
   AutoLinkTitleSettingTab,
@@ -146,6 +146,8 @@ export default class AutoLinkTitle extends Plugin {
       const endPos = EditorExtensions.getEditorPositionFromIndex(text, end);
 
       editor.replaceRange(link, startPos, endPos);
+
+      this.pasteFavicon(editor, link, selectedText)
     }
 
     return;
@@ -327,6 +329,8 @@ export default class AutoLinkTitle extends Plugin {
       const endPos = EditorExtensions.getEditorPositionFromIndex(text, end);
 
       editor.replaceRange(shortenedTitle, startPos, endPos);
+
+      this.pasteFavicon(editor, url, shortenedTitle)
     }
   }
 
@@ -365,6 +369,17 @@ export default class AutoLinkTitle extends Plugin {
   public getUrlFromLink(link: string): string {
     let urlRegex = new RegExp(DEFAULT_SETTINGS.linkRegex);
     return urlRegex.exec(link)[2];
+  }
+
+  private pasteFavicon(editor: Editor, link: string, textPositionToInsert: string): void {
+    if (this.settings.insertFavicons) {
+      const text = editor.getValue();
+      const favicon = getFaviconElement(link);
+      const start = text.indexOf(textPositionToInsert);
+      const startPos = EditorExtensions.getEditorPositionFromIndex(text, start);
+      editor.replaceRange(favicon, startPos);
+    }
+    return;
   }
 
   // Custom hashid by @shabegom
