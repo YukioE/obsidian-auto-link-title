@@ -1,5 +1,5 @@
 ## Obsidian Auto Link Title
-![Auto linking example](auto-link-title.gif)
+![Auto linking example](resources/auto-link-title.gif)
 
 ### Automatically Title New Links
 This plugin automatically fetches the webpage to extract link titles when they're pasted, creating a markdown link with the correct title set.
