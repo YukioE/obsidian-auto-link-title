@@ -82,6 +82,13 @@ export default class AutoLinkTitle extends Plugin {
       hotkeys: [],
     });
 
+    this.addCommand({
+      id: "enhance-with-favicon",
+      name: "Enhance link with favicon",
+      editorCallback: (editor) => this.enhanceWithFavicon(editor),
+      hotkeys: [],
+    });
+
     this.addSettingTab(new AutoLinkTitleSettingTab(this.app, this));
   }
 
@@ -151,6 +158,24 @@ export default class AutoLinkTitle extends Plugin {
     }
 
     return;
+  }
+
+  async enhanceWithFavicon(editor: Editor): Promise<void> {
+    // Only attempt fetch if online
+    if (!navigator.onLine) return;
+
+    let selectedText = (EditorExtensions.getSelectedText(editor) || "").trim();
+
+    // If the cursor is on a raw html link, insert favicon at the start of the link
+    if (CheckIf.isUrl(selectedText)) {
+      this.pasteFavicon(editor, selectedText, selectedText, true);
+    }
+
+    // If the cursor is on the URL part of a markdown link, insert favicon at the start of the already existing title
+    else if (CheckIf.isLinkedUrl(selectedText)) {
+      const link = this.getUrlFromLink(selectedText);
+      this.pasteFavicon(editor, link, selectedText);
+    }
   }
 
   async normalPaste(editor: Editor): Promise<void> {
@@ -371,13 +396,24 @@ export default class AutoLinkTitle extends Plugin {
     return urlRegex.exec(link)[2];
   }
 
-  private pasteFavicon(editor: Editor, link: string, textPositionToInsert: string): void {
+  private pasteFavicon(editor: Editor, link: string, selectedText: string, insertAtLink?: boolean): void {
     if (this.settings.insertFavicons) {
       const text = editor.getValue();
       const favicon = getFaviconElement(link);
-      const start = text.indexOf(textPositionToInsert);
-      const startPos = EditorExtensions.getEditorPositionFromIndex(text, start);
-      editor.replaceRange(favicon, startPos);
+
+      if (!insertAtLink) {
+        // get position of first bracket at the start of the links title e.g. [title](url)
+        const bracketIndex = text.lastIndexOf("[", text.indexOf(selectedText)) + 1;
+        const bracketPos = EditorExtensions.getEditorPositionFromIndex(text, bracketIndex);
+        
+        editor.replaceRange(favicon, bracketPos);
+      } else {
+        // get position of the start of the link
+        const linkIndex = text.indexOf(selectedText);
+        const linkPos = EditorExtensions.getEditorPositionFromIndex(text, linkIndex);
+
+        editor.replaceRange(favicon, linkPos);
+      }
     }
     return;
   }
