@@ -118,6 +118,11 @@ export default class AutoLinkTitle extends Plugin {
     // Generate a unique id for find/replace operations for the link.
     const pasteId = `Fetching Link#${this.createBlockHash()}`;
 
+    if (this.settings.apiKey.trim() === "" || this.settings.customSearchEngineId.trim() === "") {
+      new Notice("You must set your Google API Key and Custom Search Engine ID in the settings");
+      return;
+    }
+
     // Instantly paste so you don't wonder if paste is broken
     editor.replaceSelection(`[${selectedText}](${pasteId})`);
 
