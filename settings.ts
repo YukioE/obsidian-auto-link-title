@@ -122,8 +122,6 @@ export class AutoLinkTitleSettingTab extends PluginSettingTab {
           .onChange(async (value) => {
             this.plugin.settings.apiKey = value;
             await this.plugin.saveSettings();
-          }).then(textArea => {
-            textArea.inputEl.style.minWidth = "120%";
           })
       );
 
